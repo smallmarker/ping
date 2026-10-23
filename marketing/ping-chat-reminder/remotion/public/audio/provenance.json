@@ -1,0 +1,39 @@
+{
+  "source": "Locally synthesized original instrumental and UI tones",
+  "generator": "tools/generate-audio.py",
+  "seed": 16102026,
+  "bpm": 96,
+  "sampleRate": 48000,
+  "files": [
+    {
+      "file": "music-original.wav",
+      "seconds": 30.0,
+      "samplePeakDBFS": -19.69800439931282
+    },
+    {
+      "file": "tap.wav",
+      "seconds": 0.085,
+      "samplePeakDBFS": -18.119951682913516
+    },
+    {
+      "file": "copy.wav",
+      "seconds": 0.3,
+      "samplePeakDBFS": -17.49631264017068
+    },
+    {
+      "file": "move.wav",
+      "seconds": 0.38,
+      "samplePeakDBFS": -23.024629334815092
+    },
+    {
+      "file": "ping.wav",
+      "seconds": 1.2,
+      "samplePeakDBFS": -13.337996626357034
+    },
+    {
+      "file": "message.wav",
+      "seconds": 0.65,
+      "samplePeakDBFS": -17.773075234871666
+    }
+  ]
+}

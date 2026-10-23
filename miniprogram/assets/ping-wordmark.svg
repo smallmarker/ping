@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="120" viewBox="0 0 420 120" fill="none">
+  <rect width="120" height="120" rx="30" fill="#FFF9F5"/>
+  <path d="M32 33c0-7.18 5.82-13 13-13h37c7.18 0 13 5.82 13 13v43.5L78.5 94H45c-7.18 0-13-5.82-13-13V33Z" fill="#fff" stroke="#322E2D" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M78.5 94V80.5c0-2.21 1.79-4 4-4H95" stroke="#322E2D" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M49 48h25M49 62h18" stroke="#D9CFF0" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="91" cy="29" r="11" fill="#F28C82"/>
+  <path d="M100 16c6 2.5 10 7.5 11 14M104 8c10 3 17 11 19 21" stroke="#F28C82" stroke-width="6" stroke-linecap="round"/>
+  <text x="145" y="76" fill="#322E2D" font-family="-apple-system, BlinkMacSystemFont, PingFang SC, sans-serif" font-size="58" font-weight="700" letter-spacing="-2">Ping</text>
+</svg>

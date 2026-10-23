@@ -1,0 +1,51 @@
+<view class="page edit-page {{editingId ? 'editing-existing' : ''}}">
+  <view class="edit-card {{editingId && reminder.status === 'completed' ? 'readonly-record' : ''}}">
+    <view class="section-title">提醒事项</view>
+    <view class="title-input"><input value="{{reminder.title}}" disabled="{{editingId && reminder.status === 'completed'}}" maxlength="60" bindinput="onTitle" placeholder="要记住什么？" /><text wx:if="{{reminder.title && reminder.status !== 'completed'}}" class="clear" bindtap="clearTitle">×</text></view>
+  </view>
+  <view class="edit-card {{editingId && reminder.status === 'completed' ? 'readonly-record' : ''}}">
+    <view class="section-title">提醒时间</view>
+    <view class="time-fields"><picker mode="date" value="{{date}}" bindchange="onDate"><view class="time-field"><text class="field-icon">▣</text><text>{{dateLabel}}</text><text class="field-chevron">›</text></view></picker><picker mode="time" value="{{time}}" bindchange="onTime"><view class="time-field"><text class="field-icon">◷</text><text>{{time || '请选择'}}</text><text class="field-chevron">›</text></view></picker></view>
+  </view>
+  <view class="edit-card offset-card {{editingId && reminder.status === 'completed' ? 'readonly-record' : ''}}">
+    <view class="section-title">提前提醒</view>
+    <view class="offset-list"><view wx:for="{{offsetOptions}}" wx:key="value" class="offset-option {{item.value === reminder.remindOffsetMinutes ? 'selected' : ''}}" data-value="{{item.value}}" bindtap="onOffset"><text wx:if="{{item.value === reminder.remindOffsetMinutes}}" class="selected-mark">✓</text>{{item.label}}</view></view>
+    <view class="custom-offset" bindtap="openCustomOffset">自定义提前时间 <text wx:if="{{customOffsetText}}">{{customOffsetText}}</text><text class="custom-chevron">›</text></view>
+  </view>
+  <view wx:if="{{warning}}" class="warning">{{warning}}</view>
+  <view class="bottom-action">
+    <button wx:if="{{!editingId || reminder.status !== 'completed'}}" class="save-button" disabled="{{!isComplete || isSaving || isDeleting}}" bindtap="save">{{isSaving ? '正在保存…' : '保存修改'}}</button>
+    <button wx:if="{{editingId}}" class="delete-trigger" disabled="{{isSaving || isDeleting}}" bindtap="showDeleteConfirm"><view class="trash-icon" aria-hidden="true"></view><text>删除这条提醒</text></button>
+  </view>
+
+  <view wx:if="{{deleteConfirmVisible}}" class="delete-mask" bindtap="hideDeleteConfirm">
+    <view class="delete-sheet" catchtap="noop">
+      <view class="delete-title">删除这条提醒？</view>
+      <view class="delete-hint">删除后将无法恢复</view>
+      <button class="delete-confirm" disabled="{{isDeleting}}" bindtap="confirmDelete">{{isDeleting ? '正在删除…' : '删除'}}</button>
+      <button class="delete-cancel" disabled="{{isDeleting}}" bindtap="hideDeleteConfirm">取消</button>
+    </view>
+  </view>
+
+  <view wx:if="{{customSheetVisible}}" class="sheet-mask" bindtap="closeCustomOffset">
+    <view class="custom-sheet" catchtap="noop">
+      <view class="sheet-handle"></view>
+      <view class="sheet-title">自定义提前时间</view>
+      <text class="sheet-done" bindtap="closeCustomOffset">完成</text>
+      <view class="sheet-preview"><view class="sheet-bell"></view>提醒时间 · {{reminderTimeText}}</view>
+      <view class="picker-wrap">
+        <picker-view class="offset-picker" indicator-style="height: 96rpx; opacity: 0; background: transparent; border: none; border-width: 0; outline: none;" value="{{customPickerValue}}" bindchange="onCustomPickerChange">
+          <picker-view-column>
+            <view wx:for="{{customAmounts}}" wx:key="*this" class="picker-cell {{item === customAmount ? 'picker-cell-active' : ''}}">{{item}}</view>
+          </picker-view-column>
+          <picker-view-column>
+            <view wx:for="{{customUnits}}" wx:key="label" class="picker-cell {{item.label === customUnitLabel ? 'picker-cell-active' : ''}}">{{item.label}}</view>
+          </picker-view-column>
+        </picker-view>
+      </view>
+      <view wx:if="{{hasReminderTime}}" class="custom-result">将在<text>{{customNotifyText}}</text>提醒你</view>
+      <view wx:else class="custom-result">请先设置提醒时间</view>
+      <button class="sheet-confirm" bindtap="confirmCustomOffset">确认设置</button>
+    </view>
+  </view>
+</view>

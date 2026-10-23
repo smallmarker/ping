@@ -1,0 +1,6 @@
+.privacy-page { color: #463b39; }
+.privacy-title { font-size: 36rpx; line-height: 52rpx; font-weight: 600; }
+.privacy-date { display: block; margin-top: 12rpx; color: #8d817c; font-size: 26rpx; line-height: 40rpx; }
+.privacy-section { margin-top: 48rpx; }
+.privacy-heading { margin-bottom: 16rpx; font-size: 32rpx; line-height: 48rpx; font-weight: 600; }
+.privacy-section text { display: block; margin-top: 16rpx; font-size: 30rpx; line-height: 48rpx; font-weight: 400; overflow-wrap: break-word; }

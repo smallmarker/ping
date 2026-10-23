@@ -1,0 +1,10 @@
+{
+  "pages": ["pages/index/index", "pages/confirm/confirm", "pages/reminder-edit/reminder-edit", "pages/detail/detail", "pages/completed/completed", "pages/mine/mine", "pages/about/about", "pages/privacy/privacy"],
+  "window": { "navigationBarTitleText": "Ping", "navigationBarBackgroundColor": "#fff9f5", "navigationBarTextStyle": "black", "backgroundColor": "#fff9f5" },
+  "tabBar": { "backgroundColor": "#fffdfb", "borderStyle": "white", "color": "#9c928d", "selectedColor": "#d07168", "list": [
+    { "pagePath": "pages/index/index", "text": "提醒" },
+    { "pagePath": "pages/mine/mine", "text": "我的" }
+  ] },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

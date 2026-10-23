@@ -1,0 +1,24 @@
+<view class="page feedback-page">
+  <view class="idea-card">
+    <view class="section-title">你的想法</view>
+    <view class="textarea-wrap">
+      <textarea class="feedback-input" value="{{feedback}}" bindinput="onFeedback" placeholder="告诉我你希望 Ping 记住什么，或哪里让你觉得不方便" placeholder-style="color: #aaa19d;" maxlength="300" />
+      <text class="count">{{feedback.length}}/300</text>
+    </view>
+  </view>
+
+  <view class="encouragement">
+    <view class="encouragement-mark">
+      <view class="mark-ray ray-left"></view>
+      <view class="mark-ray ray-top"></view>
+      <view class="mark-ray ray-right"></view>
+      <text>P</text>
+    </view>
+    <view>和 Ping 一起，把记住这件事变得更好。</view>
+  </view>
+
+  <view class="feedback-footer">
+    <button class="submit-button" disabled="{{!feedback || isSubmitting}}" bindtap="submitFeedback">{{isSubmitting ? '提交中…' : '提交反馈'}}</button>
+  </view>
+
+</view>

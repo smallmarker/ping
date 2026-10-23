@@ -1,0 +1,13 @@
+<view class="page completed-page">
+  <view class="page-title">提醒记录</view>
+  <view class="page-subtitle">已提醒的事项会自动留在这里。</view>
+  <view wx:if="{{isLoading}}" class="state-copy">正在整理提醒记录…</view>
+  <view wx:elif="{{hasError}}" class="state-copy error-copy">暂时无法加载，<text bindtap="loadReminders">重新试试</text></view>
+  <view wx:elif="{{!reminders.length}}" class="empty-note"><view class="empty-mark">·</view><view>还没有提醒记录</view><text>通知发送成功后会自动记录。</text></view>
+  <view wx:else class="completed-list">
+    <view wx:for="{{reminders}}" wx:key="_id" class="completed-card" data-id="{{item._id}}" bindtap="goDetail" role="button" aria-label="查看提醒详情">
+      <view class="card-top"><text class="done-chip {{item.status === 'completed' ? 'legacy-chip' : ''}}">{{item.stateLabel}}</text><text class="completed-time">{{item.displayTime}}</text></view>
+      <view class="card-title">{{item.title}}</view><view wx:if="{{item.location}}" class="card-meta ellipsis">{{item.location}}</view><text class="arrow">›</text>
+    </view>
+  </view>
+</view>

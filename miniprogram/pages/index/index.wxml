@@ -1,0 +1,35 @@
+<view class="page">
+  <view class="brand">
+    <view class="brand-name">Ping</view>
+    <view class="brand-copy">你想记住什么？</view>
+    <view class="brand-sub">写一句话，Ping 会在合适的时候提醒你。</view>
+  </view>
+  <view class="composer">
+    <view class="binding-rings" aria-hidden="true"><view class="binding-ring"></view><view class="binding-ring"></view><view class="binding-ring"></view></view>
+    <view class="writing-guides" aria-hidden="true"><view class="writing-line"></view><view class="writing-line"></view><view class="writing-line"></view><view class="writing-line"></view></view>
+    <textarea class="sentence-input" disable-default-padding="{{true}}" placeholder="例如：明天下午 3 点提醒我去拿快递" placeholder-style="color:#918986; font-size:30rpx; line-height:48rpx;" value="{{text}}" bindinput="onInput" auto-height maxlength="500"/>
+    <view class="composer-footer">
+      <text class="word-count">{{text.length}}/500</text>
+      <button class="clipboard-action" bindtap="readClipboard" aria-label="主动读取剪贴板">使用剪贴板</button>
+      <button class="remind-action {{!text || isLoading ? 'is-remind-disabled' : ''}}" aria-label="Ping 一下" disabled="{{!text || isLoading}}" bindtap="onCreate">
+        <image wx:if="{{!isLoading}}" class="remind-icon {{!text ? 'is-icon-disabled' : ''}}" src="/assets/ping-action.png" mode="aspectFit"/>
+        <text wx:else class="remind-loading">···</text>
+      </button>
+    </view>
+  </view>
+  <view wx:if="{{parseError}}" class="parse-error">
+    <view class="parse-error-icon" aria-hidden="true">i</view>
+    <view class="parse-error-copy"><view>这句我还没理解好</view><view class="parse-error-sub">手动补一下，就能设提醒。</view></view>
+    <text class="error-link" bindtap="goManual">手动填写</text>
+  </view>
+  <view wx:if="{{clipboardVisible}}" class="clipboard"><view class="clipboard-top"><text>剪贴板内容预览</text><text class="close" bindtap="dismissClipboard">×</text></view><view class="clipboard-text ellipsis">{{clipboardText}}</view><view class="clipboard-tip">点击 Ping 后才会发送内容解析</view><text class="use-clipboard" bindtap="useClipboard">使用此内容</text></view>
+  <view wx:for="{{reminderGroups}}" wx:key="dateKey" class="section reminder-section">
+    <view class="section-heading"><view class="section-title">{{item.label}}<text wx:if="{{item.isOverdue}}" class="overdue-label">已过期</text></view><text class="section-count">{{item.count}} 项</text></view>
+    <view wx:for="{{item.reminders}}" wx:for-item="reminder" wx:for-index="cardIndex" wx:key="_id" class="reminder-card {{item.isOverdue ? 'overdue-card' : ''}} {{cardIndex ? 'has-card-gap' : ''}}" data-id="{{reminder._id}}" bindtap="goDetail"><text class="time-block">{{reminder.displayTime}}</text><view class="reminder-content"><view class="reminder-title ellipsis">{{reminder.title}}</view><view class="reminder-meta ellipsis">{{reminder.displayMeta}}</view></view></view>
+  </view>
+  <button wx:if="{{moreReminderId}}" class="view-more" hover-class="view-more-pressed" bindtap="goMore" aria-label="查看更多提醒">查看更多</button>
+  <view wx:if="{{listError}}" class="list-error">列表暂时未能更新，<text bindtap="loadReminders">重试</text></view>
+  <view wx:if="{{listLoading && !reminderGroups.length && !historyCount}}" class="list-error">正在更新提醒…</view>
+  <view wx:if="{{!listLoading && !listError && !reminderGroups.length}}" class="empty-note"><view class="empty-mark">·</view><view>把一句想记住的话 Ping 一下</view><text class="empty-note-sub">它会在合适的时候回来找你。</text></view>
+  <view wx:if="{{historyCount}}" class="completed-section"><view class="completed-title">提醒记录</view><view class="completed-entry" bindtap="goCompleted" role="button" aria-label="查看提醒记录"><view class="completed-mark" aria-hidden="true">≡</view><text>{{historyCount}} 条记录</text><text class="completed-action">查看 ›</text></view></view>
+</view>

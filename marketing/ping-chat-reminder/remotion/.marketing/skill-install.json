@@ -1,0 +1,13 @@
+{
+  "repository": "https://github.com/xsourabhsharma/remotion-marketing-video-skill",
+  "commit": "a7f01a8ffdab4c02f54a8a1649f1f40d32efd529",
+  "installedAt": "/Users/fiture-zl/.codex/skills/remotion-marketing-video",
+  "dependencies": "Instruction-only skill; PowerShell validator optional; no required install hooks",
+  "skillSha256": "4ab08b626e3b8bdbb254da97619a7540b0df924d3c58c1520624c9e589d578d6",
+  "referencesChecked": 12,
+  "existingSkillHashes": {
+    "/Users/fiture-zl/.agents/skills/marketing-brief/SKILL.md": "6eef4d4948dd2804f6343514a7a9fd8fbfc5548cdbc4dda44a30d1f02517978c",
+    "/Users/fiture-zl/.agents/skills/video-script/SKILL.md": "529085ac1f9bf592bf652d44a86b176f011cfec8038c1481989647a2563de921",
+    "/Users/fiture-zl/.agents/skills/remotion-video/SKILL.md": "e1d020f798800ec567fc12fc3b779bba5888ffebdf47457703fc525f4c584252"
+  }
+}

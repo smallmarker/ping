@@ -1,0 +1,17 @@
+.feedback-page { min-height:100vh; padding:38rpx 20rpx calc(160rpx + env(safe-area-inset-bottom)); background:#fff9f5; }
+.idea-card { box-sizing:border-box; padding:30rpx; background:#fffdfb; border:1rpx solid #f0e7e2; border-radius:24rpx; }
+.section-title { color:#322e2d; font-size:36rpx; font-weight:600; line-height:1.42; }
+.textarea-wrap { position:relative; box-sizing:border-box; height:400rpx; margin-top:26rpx; padding:18rpx 22rpx 58rpx; border:1rpx solid #ded9d7; border-radius:18rpx; background:#fffefd; }
+.feedback-input { display:block; box-sizing:border-box; width:100%; height:100%; color:#4b4340; font-size:26rpx; line-height:1.65; }
+.count { position:absolute; right:22rpx; bottom:18rpx; color:#938b87; font-size:23rpx; }
+.encouragement { margin-top:140rpx; color:#867d79; text-align:center; font-size:29rpx; line-height:1.5; }
+.encouragement-mark { position:relative; display:flex; align-items:center; justify-content:center; width:56rpx; height:66rpx; margin:0 auto 18rpx; color:#f07f76; font-size:48rpx; font-weight:500; }
+.encouragement-mark text { line-height:1; }
+.mark-ray { position:absolute; width:6rpx; height:20rpx; border-radius:8rpx; background:#f07f76; }
+.ray-left { top:5rpx; left:4rpx; transform:rotate(-45deg); }
+.ray-top { top:-5rpx; left:25rpx; }
+.ray-right { top:5rpx; right:4rpx; transform:rotate(45deg); }
+.submit-button::after { border:0; }
+.feedback-footer { margin-top:26rpx; }
+.submit-button { display:flex; align-items:center; justify-content:center; box-sizing:border-box; width:100%; height:92rpx; margin:0; padding:0; border-radius:20rpx; background:linear-gradient(90deg, #ef837a, #f3948a); color:#fff !important; font-size:34rpx; font-weight:600; line-height:1; text-align:center; box-shadow:0 12rpx 28rpx rgba(222, 116, 107, .18); }
+.submit-button[disabled] { background:linear-gradient(90deg, #ef837a, #f3948a); color:#fff !important; opacity:1; box-shadow:none; }

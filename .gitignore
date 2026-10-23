@@ -1,0 +1,10 @@
+node_modules/
+miniprogram/miniprogram_npm/
+project.private.config.json
+.DS_Store
+.release-backups/
+.env
+.env.*
+!.env.example
+*.log
+marketing/ping-chat-reminder/remotion/out/

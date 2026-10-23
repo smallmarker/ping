@@ -1,0 +1,60 @@
+.brand { padding:20rpx 0 48rpx; }
+.brand-name { color:#d07168; font-size:28rpx; font-weight:700; letter-spacing:1rpx; }
+.brand-copy { margin-top:12rpx; color:#322e2d; font-size:42rpx; font-weight:600; line-height:58rpx; letter-spacing:-1rpx; }
+.brand-sub { margin-top:10rpx; color:#827a76; font-size:26rpx; }
+
+/* 便签以装订环、页边线和等距基线构成；文字始终是第一层信息。 */
+.composer { position:relative; padding:32rpx 28rpx 12rpx 76rpx; background-color:#fffdfb; background-image:linear-gradient(to right, transparent 46rpx, rgba(242,140,130,.34) 47rpx, transparent 48rpx); border:1rpx solid #f1e8e3; border-radius:24rpx; box-shadow:0 10rpx 30rpx rgba(91,61,47,.05); }
+/* 环心 80/152/224rpx：首末对齐首末横线，中间落在第二、三条线之间。 */
+.binding-rings { position:absolute; z-index:2; top:68rpx; left:-12rpx; display:flex; flex-direction:column; gap:48rpx; pointer-events:none; }
+.binding-ring { box-sizing:border-box; width:24rpx; height:24rpx; border:2rpx solid #d8cdc7; border-right:0; border-radius:14rpx 0 0 14rpx; background:#fff9f5; box-shadow:-1rpx 1rpx 2rpx rgba(83,61,51,.04); }
+/* 与去掉系统内边距的 textarea 共用 32rpx 起点及 48rpx 行高，不依赖两套错位坐标。 */
+.writing-guides { position:absolute; top:32rpx; right:28rpx; left:76rpx; pointer-events:none; }
+.writing-line { height:48rpx; border-bottom:1rpx solid rgba(222,208,199,.62); box-sizing:border-box; }
+.sentence-input { position:relative; z-index:1; display:block; box-sizing:border-box; width:100%; min-height:192rpx; margin:0; padding:0; color:#322e2d; font-family:inherit; font-size:30rpx; line-height:48rpx; background:transparent; }
+.composer-footer { display:flex; align-items:flex-end; justify-content:space-between; height:76rpx; margin-top:12rpx; color:#b2a7a1; font-size:22rpx; }
+.word-count { padding-bottom:8rpx; line-height:30rpx; }
+.remind-action { position:absolute; right:22rpx; bottom:6rpx; z-index:2; display:flex; align-items:center; justify-content:center; box-sizing:border-box; width:88rpx!important; min-width:0!important; max-width:88rpx!important; height:88rpx; margin:0; padding:0; overflow:visible; background:transparent; border:0; border-radius:50%; line-height:88rpx; box-shadow:none; }
+.remind-action::after { border:0; }
+.is-remind-disabled { background:transparent; box-shadow:none; }
+.remind-icon { width:88rpx; height:88rpx; }
+.is-icon-disabled { opacity:.42; }
+.remind-loading { margin-right:6rpx; letter-spacing:3rpx; }
+.parse-error { display:flex; align-items:center; gap:16rpx; margin-top:24rpx; padding:16rpx 20rpx; border-radius:16rpx; background:#fff0eb; color:#463b39; }
+.parse-error-icon { display:flex; flex:0 0 auto; align-items:center; justify-content:center; box-sizing:border-box; width:32rpx; height:32rpx; border:2rpx solid #f28c82; border-radius:50%; color:#f28c82; font-size:22rpx; font-weight:600; line-height:1; }
+.parse-error-copy { flex:1; min-width:0; color:#463b39; font-size:25rpx; font-weight:500; line-height:34rpx; }
+.parse-error-sub { color:#8d817c; font-size:23rpx; font-weight:400; line-height:32rpx; }
+.error-link { flex:0 0 auto; color:#f28c82; font-size:26rpx; font-weight:500; line-height:40rpx; white-space:nowrap; }
+
+.clipboard { margin-top:24rpx; padding:24rpx 26rpx; background:#f4f0fa; border-radius:20rpx; color:#625a6e; font-size:25rpx; }
+.clipboard-top { display:flex; justify-content:space-between; font-weight:600; }
+.close { color:#9b91a5; font-size:38rpx; line-height:28rpx; }
+.clipboard-text { margin-top:12rpx; color:#776e80; }
+.clipboard-tip { margin-top:16rpx; color:#938a9c; font-size:22rpx; }
+.use-clipboard { display:inline-block; margin-top:12rpx; color:#775a99; font-weight:600; }
+.section { margin-top:64rpx; }
+.section-heading { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:24rpx; }
+.section-title { color:#463b39; font-size:32rpx; font-weight:600; line-height:48rpx; }
+.section-count { color:#8d817c; font-size:26rpx; line-height:40rpx; }
+.overdue-label { margin-left:16rpx; color:#d9a35d; font-size:24rpx; font-weight:400; line-height:36rpx; }
+.overdue-card .time-block { color:#d9a35d; }
+.reminder-card { display:flex; align-items:flex-start; box-sizing:border-box; min-height:160rpx; padding:32rpx; background:#fff; border:2rpx solid #f1e8e3; border-radius:32rpx; }
+.has-card-gap { margin-top:32rpx; }
+.view-more { display:flex; align-items:center; justify-content:center; width:100%; min-height:88rpx; margin:24rpx 0 0; padding:24rpx; box-sizing:border-box; background:transparent; color:#f28c82; font-size:26rpx; font-weight:500; line-height:40rpx; border:0; border-radius:0; }
+.view-more::after { border:0; }
+.view-more-pressed { color:#de746b; }
+.time-block { flex:0 0 124rpx; width:124rpx; color:#f28c82; font-size:34rpx; font-weight:600; line-height:48rpx; font-variant-numeric:tabular-nums; }
+.reminder-content { flex:1; min-width:0; }
+.reminder-title { color:#463b39; font-size:32rpx; font-weight:600; line-height:48rpx; }
+.reminder-meta { margin-top:4rpx; color:#8d817c; font-size:26rpx; line-height:40rpx; }
+.empty-note { margin-top:64rpx; padding:40rpx 20rpx; color:#655c58; font-size:28rpx; text-align:center; }
+.list-error { margin-top:48rpx; color:#8d817c; font-size:26rpx; line-height:40rpx; text-align:center; }
+.list-error text { color:#f28c82; }
+.empty-note-sub { display:block; margin-top:12rpx; color:#a69d98; font-size:24rpx; }
+.empty-mark { color:#f28c82; font-size:58rpx; line-height:48rpx; }
+.completed-section { margin-top:96rpx; }
+.completed-title { color:#8d817c; font-size:26rpx; font-weight:500; line-height:40rpx; }
+.completed-entry { display:flex; align-items:center; box-sizing:border-box; min-height:96rpx; margin-top:32rpx; color:#463b39; font-size:30rpx; font-weight:400; line-height:44rpx; }
+.completed-mark { display:flex; align-items:center; justify-content:center; flex:0 0 auto; width:64rpx; height:64rpx; margin-right:24rpx; border-radius:50%; background:#77af91; color:#fff; font-size:42rpx; font-weight:500; line-height:64rpx; }
+.completed-action { margin-left:auto; color:#8d817c; font-size:26rpx; font-weight:400; line-height:40rpx; }
+.clipboard-action { margin: 0 auto 0 24rpx; padding: 0 16rpx; min-height: 88rpx; display: flex; align-items: center; background: transparent; color: #8d817c; font-size: 26rpx; line-height: 40rpx; font-weight: 400; }

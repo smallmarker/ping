@@ -1,0 +1,8 @@
+<view class="page mine-page">
+  <view class="profile"><view class="avatar"><view class="avatar-note"><view class="avatar-dot"></view><view class="avatar-line line-one"></view><view class="avatar-line line-two"></view></view></view><view><view class="name">你的 Ping</view><view class="hint">怕忘？Ping 一下。</view></view></view>
+  <view class="stats"><view><text class="stat-number">{{statsError ? '—' : createdCount}}</text><text>累计创建</text></view><view><text class="stat-number">{{statsError ? '—' : remindedCount}}</text><text>已提醒</text></view></view>
+  <view wx:if="{{statsError}}" class="stats-error" bindtap="loadStats">暂时无法同步数据，点此重试</view>
+  <button class="co-create" open-type="feedback" hover-class="co-create-pressed" aria-label="意见反馈，一起把 Ping 变得更好"><view class="co-title">一起把 Ping 变得更好</view><view class="co-copy">有一个你希望它记住的新场景吗？</view><text aria-hidden="true">›</text></button>
+  <view class="menu"><view bindtap="goPrivacy" role="button" aria-label="隐私政策">隐私政策 <text>›</text></view><view bindtap="goAbout" role="button" aria-label="关于 Ping">关于 Ping <text>›</text></view></view>
+  <view class="version">版本 {{version}}</view>
+</view>

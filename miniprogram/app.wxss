@@ -1,0 +1,9 @@
+page { background: #fff9f5; color: #322e2d; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif; font-size: 30rpx; }
+button::after { border: 0; }
+.page { min-height: 100vh; box-sizing: border-box; padding: 32rpx 40rpx calc(64rpx + env(safe-area-inset-bottom)); }
+.note { position: relative; overflow: hidden; box-sizing: border-box; background-color: #fff; background-image: linear-gradient(to bottom, transparent 47rpx, rgba(241, 232, 227, .58) 48rpx); background-size: 100% 48rpx; border: 1rpx solid #f1e8e3; border-radius: 32rpx; box-shadow: 0 12rpx 40rpx rgba(91, 61, 47, .07); }
+.primary-button { background: #f28c82; color: #fff; border-radius: 28rpx; font-weight: 600; font-size: 30rpx; line-height: 96rpx; }
+.primary-button[disabled] { background: #ead9d4; color: #fff; }
+.secondary-button { background: #fff; color: #655c58; border: 1rpx solid #eaded8; border-radius: 28rpx; font-size: 28rpx; line-height: 88rpx; }
+.muted { color: #827a76; font-size: 26rpx; line-height: 40rpx; }
+.ellipsis { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

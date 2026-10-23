@@ -1,0 +1,33 @@
+<template name="note-content">
+  <view class="note-title">{{item.title}}</view>
+  <view class="note-guides" aria-hidden="true"><view class="note-line"></view><view class="note-line"></view><view class="note-line"></view></view>
+  <view class="note-details">
+    <view class="detail-row"><text class="detail-label">提醒时间</text><text class="detail-value">{{detailTime}}</text></view>
+    <view class="detail-row"><text class="detail-label">提前提醒</text><text class="detail-value">{{offsetText}}</text></view>
+    <view wx:if="{{item.location}}" class="location-row">{{item.location}}</view>
+  </view>
+  <view wx:if="{{interactive}}" class="note-edit" bindtap="onEdit"><text class="note-edit-icon">✎</text><text>编辑</text></view>
+  <view wx:else class="note-edit"><text class="note-edit-icon">✎</text><text>编辑</text></view>
+  <view class="reminder-state state-{{stateTone}}"><text class="state-label">{{stateLabel}}</text><text wx:if="{{stateTime}}" class="state-time">{{stateTimePrefix}} {{stateTime}}</text></view>
+</template>
+
+<view class="page detail-page">
+  <view class="detail-nav" style="height:{{navBarHeight}}px; padding-top:{{navTop}}px"><view class="detail-nav-row" style="height:{{navHeight}}px"><view class="nav-back" aria-label="返回" bindtap="goBack">‹</view><text class="nav-title">Ping</text></view></view>
+  <view wx:if="{{detailLoading && !reminder._id}}" class="detail-message">正在加载提醒…</view>
+  <view wx:if="{{detailError}}" class="detail-message">提醒未能加载，可能已删除。<button class="detail-retry" bindtap="retryLoad">重试</button></view>
+  <text wx:if="{{reminder._id && !detailError}}" class="pager-count">{{pageIndex + 1}} / {{allReminders.length}}</text>
+  <view wx:if="{{reminder._id && !detailError}}" class="detail-pager" bindtouchstart="onTouchStart" bindtouchend="onTouchEnd">
+    <view class="book-stack" aria-hidden="true"><view class="book-ring"></view><view class="book-ring"></view><view class="book-ring"></view></view>
+    <view class="detail-note">
+      <view class="note-margin" aria-hidden="true"></view>
+      <view class="page-leaf page-current">
+        <template is="note-content" data="{{item: reminder, detailTime: detailTime, offsetText: offsetText, stateLabel: stateLabel, stateTone: stateTone, stateTime: stateTime, stateTimePrefix: stateTimePrefix, interactive: true}}" />
+      </view>
+      <view wx:if="{{turning}}" class="page-leaf page-turning {{turnDirection}}">
+        <template is="note-content" data="{{item: turning.reminder, detailTime: turning.detailTime, offsetText: turning.offsetText, stateLabel: turning.stateLabel, stateTone: turning.stateTone, stateTime: turning.stateTime, stateTimePrefix: turning.stateTimePrefix, interactive: false}}" />
+      </view>
+    </view>
+  </view>
+  <view wx:if="{{browseError}}" class="detail-message">这条提醒已加载，提醒册暂未同步。<button class="detail-retry" bindtap="retryLoad">重试同步</button></view>
+  <view wx:if="{{reminder._id && !detailError}}" class="detail-message">{{noticeLabel}}</view>
+</view>

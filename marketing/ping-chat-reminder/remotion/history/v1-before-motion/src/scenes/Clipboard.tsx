@@ -1,0 +1,4 @@
+import React from 'react';
+import {useCurrentFrame,Img,staticFile} from 'remotion';
+import {Shell,Heading,Touch,Note} from '../ui';
+export default function Clipboard(){const f=useCurrentFrame();return <Shell variant="diagonal" step="03 / 使用剪贴板"><Heading>复制的话，<br/>直接用。</Heading><div style={{position:'absolute',left:76,top:475,fontSize:27,color:'#736660'}}>Ping 实际界面 · 局部放大</div><div style={{position:'absolute',left:76,top:575,width:928,height:755,borderRadius:32,overflow:'hidden',border:'1px solid #E3D6CE',boxShadow:'0 20px 50px rgba(91,61,47,.07)',zIndex:2}}><Img src={staticFile(f<77?'clipboard.png':'filled.png')} style={{position:'absolute',width:928,height:2011,top:-515,left:0}}/></div><Touch x={231} y={1253} at={60}/><Touch x={876} y={934} at={145}/><div style={{position:'absolute',left:76,right:76,top:1460,fontSize:42,lineHeight:1.5,fontWeight:550}}>{f<77?'先预览，再使用。':'原句填好，Ping 一下。'}</div><Note>{f<77?'点击「使用此内容」。':'点击右下角 Ping 图标，解析事项和时间。'}</Note></Shell>}

@@ -1,0 +1,2 @@
+const a=require('miniprogram-automator');const path=require('path');
+(async()=>{const m=await a.connect({wsEndpoint:'ws://127.0.0.1:9420'});const p=await m.currentPage();await p.callMethod('readClipboard');await p.waitFor(600);await m.screenshot({path:path.resolve('public/clipboard.png')});console.log('Saved clean clipboard preview');await p.callMethod('dismissClipboard');m.disconnect()})().catch(console.error)

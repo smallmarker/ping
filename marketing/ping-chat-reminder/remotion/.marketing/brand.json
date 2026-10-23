@@ -1,0 +1,22 @@
+{
+  "logoPath": "public/ping-wordmark.svg",
+  "colors": {
+    "primary": "#F28C82",
+    "accent": "#F4F0FA",
+    "background": "#FFF9F5",
+    "text": "#322E2D",
+    "muted": "#827A76",
+    "success": "#77AF91",
+    "danger": "#D67D76"
+  },
+  "font": {
+    "family": "PingFang SC",
+    "googleFont": null
+  },
+  "sources": [
+    "miniprogram/app.wxss",
+    "docs/ui/DESIGN.md"
+  ],
+  "introPath": null,
+  "outroPath": null
+}

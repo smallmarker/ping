@@ -1,0 +1,24 @@
+<view class="page about-page">
+  <view class="about-nav" style="height:{{navBarHeight}}px; padding-top:{{navTop}}px">
+    <view class="about-nav-row" style="height:{{navHeight}}px">
+      <view class="about-back" role="button" aria-label="返回" bindtap="goBack"></view>
+      <text class="about-nav-title">关于 Ping</text>
+    </view>
+  </view>
+
+  <view class="about-main">
+    <view class="about-identity">
+      <image class="about-logo" src="../../assets/ping-action.png" mode="aspectFit" aria-label="Ping 标识" />
+      <text class="about-name">Ping</text>
+      <text class="about-tagline">把想记住的事，轻轻 Ping 一下。</text>
+    </view>
+
+    <view class="about-description">
+      <text>一句话记下想做的事，</text>
+      <text>在合适的时候提醒你。</text>
+    </view>
+    <text class="about-version">版本 V1.0.0</text>
+  </view>
+
+  <text class="about-copyright">© 2026 Ping</text>
+</view>

@@ -1,0 +1,12 @@
+<view class="page confirm-page">
+  <view class="hero"><view class="hero-heading"><view class="hero-title">确认提醒</view><button class="edit-action" bindtap="openEditor" disabled="{{isSaving}}" aria-label="修改提醒事项、时间和提前提醒">修改提醒</button></view><view class="hero-copy">看看这些信息对不对。</view></view>
+  <view class="confirm-card">
+    <view class="summary-row item-row"><view class="line-icon note-icon"></view><view class="summary-body"><view class="item-label">提醒事项</view><view class="item-value">{{reminder.title || '还没有写下事项'}}</view></view></view>
+    <view class="card-divider"></view>
+    <view class="summary-row time-row"><view class="line-icon calendar-icon"></view><view class="summary-body"><view class="item-label">提醒时间</view><view wx:if="{{isComplete}}" class="item-value time-value">{{relativeTime}}</view><view wx:else class="item-value missing">需要补充时间</view><view wx:if="{{isComplete}}" class="date-detail">{{dateDetail}}</view></view></view>
+    <view class="card-divider"></view>
+    <view class="summary-row offset-row"><view class="line-icon bell-icon"></view><view class="summary-body"><view class="item-label">提前提醒</view><view class="item-value offset-value">{{offsetLabel}}</view></view></view>
+  </view>
+  <view wx:if="{{warning}}" class="warning">{{warning}}</view>
+  <view class="bottom-action"><button class="confirm-button" disabled="{{!isComplete || isSaving}}" bindtap="onConfirm">{{isSaving ? '正在保存…' : '确认提醒'}}</button><view class="permission-tip">确认后再请求通知授权</view></view>
+</view>
