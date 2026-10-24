@@ -51,6 +51,14 @@ No stock music or third-party sound recording was downloaded. All media is kept 
 
 `npm run typecheck` must pass. `node qa-motion.cjs` checks representative still frames. `node qa-motion.cjs --affected --draft` checks only the updated focus frames and a 5.5–13.0s low-resolution draft, including stereo audio. Still/range drafts are QA assets, not final exports.
 
-Final output is proposed at `../video.mp4`, 1080×1920 H.264, 30fps, yuv420p, AAC stereo. Complete final render remains pending the user's approval of the V2 preview and output path.
+The complete 30-second export for the project README is `../../../docs/media/ping-promo-30s.mp4`: 1080×1920 H.264, 30fps, yuv420p, with audio. The cover image is `../../../docs/media/ping-promo-poster.jpg`.
+
+To reproduce the export:
+
+```sh
+npx remotion render src/index.ts Main ../../../docs/media/ping-promo-30s.mp4 --codec h264 --crf 20 --pixel-format yuv420p --scale 1 --concurrency 2 --browser-executable '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+```
+
+The browser path above is for macOS; set it to your installed Chrome executable on other systems.
 
 The inherited CLI template uses scale 2, which produces a 2160×3840 intermediate; downsample that intermediate to exactly 1080×1920 with Lanczos, or explicitly override scale to 1. Do not deliver the scale-2 intermediate as the requested 1080×1920 MP4.
