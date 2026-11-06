@@ -49,9 +49,9 @@ test('explicit notification denial overrides previous authorization', async () =
 
 test('lease recovery retries only undispatched claims; ambiguous sends never duplicate', async () => {
   process.env.SUBSCRIBE_TEMPLATE_ID = 'test-template';
-  const f = fixture(); const send = f.load('sendReminder');
-  f.rows.reminders.push(due({ _id: 'claim', notifyStatus: 'sending', notifyPhase: 'claimed', notifyLockAt: new Date(Date.now() - 180000), notifyLockToken: 'a' }));
-  f.rows.reminders.push(due({ _id: 'dispatch', notifyStatus: 'sending', notifyPhase: 'dispatching', notifyLockAt: new Date(Date.now() - 180000), notifyLockToken: 'b' }));
+  const f = fixture(); f.state.now = Math.floor(Date.now() / 300000) * 300000; const send = f.load('sendReminder');
+  f.rows.reminders.push(due({ _id: 'claim', notifyAt: new Date(f.state.now - 30000), notifyStatus: 'sending', notifyPhase: 'claimed', notifyLockAt: new Date(f.state.now - 180000), notifyLockToken: 'a' }));
+  f.rows.reminders.push(due({ _id: 'dispatch', notifyStatus: 'sending', notifyPhase: 'dispatching', notifyLockAt: new Date(f.state.now - 180000), notifyLockToken: 'b' }));
   assert.equal((await send(timer)).data.recovered, 1); assert.equal(f.sent.length, 0);
   assert.equal((await send(timer)).data.sent, 1);
   assert.equal((await send(timer)).data.recovered, 1); assert.equal(f.rows.reminders[1].notifyStatus, 'unknown');
@@ -62,7 +62,7 @@ test('successful send followed by DB write failure is not blindly resent', async
   process.env.SUBSCRIBE_TEMPLATE_ID = 'test-template'; const f = fixture(); f.rows.reminders.push(due()); const send = f.load('sendReminder');
   f.state.beforeUpdate = async (_, __, patch) => { if (patch.notifyStatus === 'sent') throw new Error('DB unavailable after external success'); };
   assert.equal((await send(timer)).data.uncertain, 1); assert.equal(f.sent.length, 1);
-  f.state.beforeUpdate = null; f.rows.reminders[0].notifyLockAt = new Date(Date.now() - 180000);
+  f.state.beforeUpdate = null; f.state.now = Math.ceil(Date.now() / 300000) * 300000; f.rows.reminders[0].notifyLockAt = new Date(f.state.now - 180000);
   await send(timer); assert.equal(f.sent.length, 1); assert.equal(f.rows.reminders[0].notifyStatus, 'unknown');
 });
 

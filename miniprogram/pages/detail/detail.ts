@@ -113,7 +113,6 @@ Page({
     this.setData({ menuOpen: false });
     wx.navigateTo({
       url: `/pages/reminder-edit/reminder-edit?id=${reminder._id}&data=${encodeURIComponent(JSON.stringify(reminder))}`,
-      events: { updated: () => this.onLoad({ id: reminder._id || '' }) },
     });
   },
   onDelete() {

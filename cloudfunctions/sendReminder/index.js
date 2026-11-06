@@ -9,6 +9,7 @@ const LEASE_MS = 2 * 60 * 1000;
 const WORK_BUDGET_MS = 2200;
 const SEND_RESERVE_MS = 900;
 const TIMER = 'pingReminderEveryMinute';
+const MAINTENANCE_INTERVAL_MINUTES = 5;
 const formatTime = value => new Intl.DateTimeFormat('zh-CN', { timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(value).replace(/\//g, '-');
 const revision = row => typeof row.revision === 'number' ? row.revision : db.command.exists(false);
 const release = () => ({ notifyLockAt: db.command.remove(), notifyLockToken: db.command.remove(), notifyPhase: db.command.remove(), updatedAt: db.serverDate() });
@@ -25,13 +26,25 @@ exports.main = async (event = {}) => {
   const now = new Date(started); const oldest = new Date(started - MAX_LATENESS);
   const remaining = () => budget - (Date.now() - started);
   const summary = { scanned: 0, sent: 0, failed: 0, skipped: 0, recovered: 0, uncertain: 0, missed: 0, deferred: 0 };
+  // 使用绝对分钟分桶，不依赖热实例内存；冷启动不能重置节流计时。
+  const minute = Math.floor(started / 60000);
+  const maintenanceDue = minute % MAINTENANCE_INTERVAL_MINUTES === 0;
+  const finish = () => {
+    // 空轮次只在整点采样；真实发送、维护及预算不足仍可排查。
+    if (Object.values(summary).some(value => value > 0) || minute % 60 === 0) {
+      console.info('sendReminder result', { requestId, ...summary, maintenanceDue, durationMs: Date.now() - started });
+    }
+    return { code: 0, message: 'ok', data: summary, requestId };
+  };
   try {
-    // 免费版每次至多发送一条。空闲轮次才维护过期状态/旧租约，不让维护扫描拖慢发送。
+    // 免费版每次至多发送一条。每分钟检查到点提醒，不缓存“没有提醒”的结果。
     const due = await db.collection('reminders').where({ status: 'pending', notifyStatus: 'authorized', notifyAt: db.command.and([db.command.gte(oldest), db.command.lte(now)]), notifyAttemptCount: db.command.lt(MAX_ATTEMPTS) }).orderBy('notifyAt', 'asc').limit(1).get();
     summary.scanned = due.data.length;
     const row = due.data[0];
     if (!row) {
-      if (remaining() < SEND_RESERVE_MS) { summary.deferred++; return { code: 0, message: 'ok', data: summary, requestId }; }
+      if (!maintenanceDue) return finish();
+      // 仅五分钟分桶中的空闲轮次维护一个异常记录，不占用有待发提醒的轮次。
+      if (remaining() < SEND_RESERVE_MS) { summary.deferred++; return finish(); }
       const stale = await db.collection('reminders').where(db.command.or([
         { notifyStatus: 'sending', notifyLockAt: db.command.lte(new Date(started - LEASE_MS)) },
         { status: 'pending', notifyStatus: 'authorized', notifyAt: db.command.lt(oldest) },
@@ -91,8 +104,7 @@ exports.main = async (event = {}) => {
         } catch (_) { summary.uncertain++; console.error('sendReminder result write failed', { requestId, reminderId: row._id }); }
       }
     }
-    console.info('sendReminder result', { requestId, ...summary, durationMs: Date.now() - started });
-    return { code: 0, message: 'ok', data: summary, requestId };
+    return finish();
   } catch (error) {
     console.error('sendReminder failed', { requestId, errCode: error.errCode || 'unknown' });
     return { code: 'DATABASE_ERROR', message: '发送任务失败', data: summary, requestId };

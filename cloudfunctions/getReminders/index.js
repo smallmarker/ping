@@ -18,9 +18,9 @@ exports.main = async (event = {}) => {
       return { code: 0, message: 'ok', data: { item: publicReminder(found.data[0]) }, requestId };
     }
     if (event.mode === 'stats') {
-      const [created, completed, reminded] = await Promise.all([db.collection('reminders').where({ _openid: OPENID }).count(), db.collection('reminders').where({ _openid: OPENID, status: 'completed' }).count(), db.collection('reminders').where({ _openid: OPENID, status: db.command.neq('deleted'), notifyStatus: 'sent' }).count()]);
+      const [created, completed, reminded] = await Promise.all([db.collection('reminders').where({ _openid: OPENID }).count(), event.includeLegacyCompleted === false ? null : db.collection('reminders').where({ _openid: OPENID, status: 'completed' }).count(), db.collection('reminders').where({ _openid: OPENID, status: db.command.neq('deleted'), notifyStatus: 'sent' }).count()]);
       // completedCount remains for old clients; it must never imply notification success.
-      return { code: 0, message: 'ok', data: { createdCount: created.total, completedCount: completed.total, remindedCount: reminded.total }, requestId };
+      return { code: 0, message: 'ok', data: { createdCount: created.total, ...(completed ? { completedCount: completed.total } : {}), remindedCount: reminded.total }, requestId };
     }
     const status = group === 'all' ? db.command.neq('deleted') : group;
     const field = group === 'completed' ? 'completedAt' : sort === 'createdAtDesc' ? 'createdAt' : 'remindAt';

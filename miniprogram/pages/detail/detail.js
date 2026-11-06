@@ -60,7 +60,7 @@ Page({
       setTimeout(() => this.setData({ turning: null, turnDirection: '', isTurning: false }), 440);
     });
   },
-  onEdit() { const reminder = this.data.reminder; if (!reminder._id) return; this.setData({ menuOpen: false }); wx.navigateTo({ url: `/pages/reminder-edit/reminder-edit?id=${reminder._id}&data=${encodeURIComponent(JSON.stringify(reminder))}`, events: { updated: () => this.onLoad({ id: reminder._id }) } }); },
+  onEdit() { const reminder = this.data.reminder; if (!reminder._id) return; this.setData({ menuOpen: false }); wx.navigateTo({ url: `/pages/reminder-edit/reminder-edit?id=${reminder._id}&data=${encodeURIComponent(JSON.stringify(reminder))}` }); },
   onDelete() {
     const id = this.data.reminder._id; if (!id) return; this.setData({ menuOpen: false });
     wx.showModal({ title: '删除这条提醒？', content: '删除后将不再显示。', confirmColor: '#d67d76', success: async ({ confirm }) => { if (!confirm) return; try { await deleteReminder(id); getApp().globalData.suppressClipboardOnce = true; wx.showToast({ title: '已删除', icon: 'success' }); setTimeout(() => wx.navigateBack(), 500); } catch (_) { wx.showToast({ title: '删除失败，请重试', icon: 'none' }); } } });

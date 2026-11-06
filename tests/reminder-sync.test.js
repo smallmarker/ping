@@ -78,7 +78,7 @@ const old = { _id: 'old', title: '原有提醒', status: 'pending', createdAt: '
 
     const older = service.getReminders();
     const olderList = lists.at(-1);
-    const newer = service.getReminders();
+    const newer = service.getReminders('createdAtDesc', { force: true });
     lists.at(-1).resolve(response({ items: [{ ...canonical, title: '另一端的最新修改' }, old] }));
     await newer;
     olderList.resolve(response({ items: [canonical, old] }));

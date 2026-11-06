@@ -6,6 +6,21 @@ let mutationVersion = 0;
 let readVersion = 0;
 let appliedReadVersion = 0;
 let cachedReminders: Reminder[] | null = null;
+interface ReadOptions { force?: boolean; }
+interface ReminderStats { createdCount: number; completedCount?: number; remindedCount: number; }
+const readFlights = new Map<string, Promise<unknown>>();
+const STATS_TTL_MS = 30000;
+let cachedStats: { version: number; at: number; value: ReminderStats } | null = null;
+let statsReadVersion = 0;
+let appliedStatsReadVersion = 0;
+const shareRead = <T>(key: string, load: () => Promise<T>, force = false): Promise<T> => {
+  if (!force && readFlights.has(key)) return readFlights.get(key) as Promise<T>;
+  const request = load();
+  readFlights.set(key, request);
+  const cleanup = () => { if (readFlights.get(key) === request) readFlights.delete(key); };
+  request.then(cleanup, cleanup);
+  return request;
+};
 export const reconcileReminders = (items: Reminder[]): Reminder[] => {
   const rows = new Map(items.filter(item => item.status !== 'deleted').map(item => [item._id, item]));
   changes.forEach(({ patch }, id) => {
@@ -15,7 +30,7 @@ export const reconcileReminders = (items: Reminder[]): Reminder[] => {
   return Array.from(rows.values());
 };
 export const getCachedReminders = () => cachedReminders === null ? null : reconcileReminders(cachedReminders);
-const recordChange = (id: string, patch: Partial<Reminder>) => { changes.set(id, { version: ++mutationVersion, patch: { ...changes.get(id)?.patch, ...patch } }); };
+const recordChange = (id: string, patch: Partial<Reminder>) => { changes.set(id, { version: ++mutationVersion, patch: { ...changes.get(id)?.patch, ...patch } }); cachedStats = null; };
 const syncFields = ['title', 'remindAt', 'remindOffsetMinutes', 'location', 'note', 'status'] as const;
 const matchesChange = (row: Reminder, patch: Partial<Reminder>) => syncFields.every(key => {
   if (!(key in patch)) return true;
@@ -32,7 +47,7 @@ const call = async <T>(name: string, data = {}): Promise<T> => {
 export type ParsedReminder = Pick<Reminder, 'title' | 'remindAt' | 'location' | 'note'> & { confidence: number; missingFields: Array<'title' | 'date' | 'time'>; parseWarnings: string[]; rawTimeText: string; timePrecision: 'date' | 'hour' | 'minute' | 'unknown'; };
 export const parseReminder = (text: string) => call<ParsedReminder>('parseReminder', { text, currentTime: new Date().toISOString(), timezone: 'Asia/Shanghai', locale: 'zh-CN', sourceType: 'text' });
 export const createReminder = async (reminder: Reminder, clientRequestId = `${Date.now()}-${Math.random().toString(36).slice(2)}`) => { const result = await call<{ reminderId: string; reminder?: Reminder }>('createReminder', { reminder, clientRequestId }); recordChange(result.reminderId, result.reminder || { ...reminder, status: 'pending', createdAt: new Date().toISOString() }); return result; };
-export const getReminders = async (sort: 'remindAtAsc' | 'createdAtDesc' = 'createdAtDesc') => {
+const fetchReminders = async (sort: 'remindAtAsc' | 'createdAtDesc') => {
   const requestVersion = ++readVersion;
   const startedMutationVersion = mutationVersion;
   const items: Reminder[] = []; const seen = new Set<string>(); let cursor: string | null = null;
@@ -50,9 +65,26 @@ export const getReminders = async (sort: 'remindAtAsc' | 'createdAtDesc' = 'crea
   cachedReminders = reconcileReminders(result.items);
   return cachedReminders;
 };
+// 只合并相同排序、同一写入版本的进行中请求，不缓存列表的新鲜度。
+export const getReminders = (sort: 'remindAtAsc' | 'createdAtDesc' = 'createdAtDesc', options: ReadOptions = {}) => shareRead(`list:${sort}:${mutationVersion}`, () => fetchReminders(sort), options.force);
 export const updateReminder = async (id: string, reminder: Partial<Reminder>) => { const result = await call<{ id: string }>('updateReminder', { id, reminder }); recordChange(id, reminder); return result; };
 export const completeReminder = async (id: string) => { const result = await call<{ id: string; completedAt?: string }>('completeReminder', { id }); recordChange(id, { status: 'completed', completedAt: result.completedAt || new Date().toISOString() }); return result; };
 export const deleteReminder = async (id: string) => { const result = await call<{ id: string }>('deleteReminder', { id }); recordChange(id, { status: 'deleted' }); return result; };
 export const submitFeedback = (content: string) => call<{ feedbackId: string }>('submitFeedback', { content });
-export const getReminder = async (id: string) => (await call<{ item: Reminder }>('getReminders', { id })).item;
-export const getReminderStats = async () => { const stats = await call<{ createdCount: number; completedCount: number; remindedCount: number }>('getReminders', { mode: 'stats' }); if (!stats || !Number.isInteger(stats.createdCount) || !Number.isInteger(stats.remindedCount)) throw new Error('统计服务尚未就绪'); return stats; };
+export const getReminder = (id: string) => shareRead(`item:${id}:${mutationVersion}`, async () => (await call<{ item: Reminder }>('getReminders', { id })).item);
+export const getReminderStats = async (options: ReadOptions = {}): Promise<ReminderStats> => {
+  const version = mutationVersion;
+  const age = cachedStats ? Date.now() - cachedStats.at : Infinity;
+  if (!options.force && cachedStats && cachedStats.version === version && age >= 0 && age < STATS_TTL_MS) return cachedStats.value;
+  return shareRead(`stats:${version}`, async () => {
+    const requestVersion = ++statsReadVersion;
+    const stats = await call<ReminderStats>('getReminders', { mode: 'stats', includeLegacyCompleted: false });
+    if (!stats || !Number.isInteger(stats.createdCount) || stats.createdCount < 0 || !Number.isInteger(stats.remindedCount) || stats.remindedCount < 0) throw new Error('统计服务尚未就绪');
+    // 写入发生前启动的统计不能更新缓存或返回陈旧数字。
+    if (version !== mutationVersion) return getReminderStats();
+    if (requestVersion < appliedStatsReadVersion && cachedStats) return cachedStats.value;
+    appliedStatsReadVersion = requestVersion;
+    cachedStats = { version, at: Date.now(), value: stats };
+    return stats;
+  }, options.force);
+};

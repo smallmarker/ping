@@ -15,7 +15,7 @@ const condition = (actual, expected) => {
 const matches = (row, query) => query.op === 'and' ? query.conditions.every(item => matches(row, item)) : query.op === 'or' ? query.conditions.some(item => matches(row, item)) : Object.entries(query).every(([key, value]) => condition(row[key], value));
 exports.fixture = () => {
   const rows = { reminders: [], feedback: [] }; const sent = []; let serial = 0;
-  const state = { owner: 'owner', source: 'wx_trigger', beforeUpdate: null, beforeGet: null, beforeRemove: null, send: null, now: null, calls: { get: 0, update: 0, remove: 0 } };
+  const state = { owner: 'owner', source: 'wx_trigger', beforeUpdate: null, beforeGet: null, beforeRemove: null, send: null, now: null, logs: [], countCalls: 0, calls: { get: 0, update: 0, remove: 0 } };
   const command = { and: conditions => ({ op: 'and', conditions }), or: conditions => ({ op: 'or', conditions }), remove: () => ({ op: 'remove' }) };
   for (const op of ['lt', 'lte', 'gt', 'gte', 'neq', 'exists', 'in']) command[op] = value => ({ op, value });
   const db = { command, serverDate: () => new Date(), createCollection: async () => ({}), collection: name => ({
@@ -28,7 +28,7 @@ exports.fixture = () => {
       const chain = {
         orderBy(key, direction) { orders.push([key, direction]); return chain; }, limit(value) { count = value; return chain; },
         async get() { state.calls.get++; if (state.beforeGet) await state.beforeGet(name); return { data: selected().map(row => ({ ...row })) }; },
-        async count() { return { total: selected().length }; },
+        async count() { state.countCalls++; return { total: selected().length }; },
         async update({ data }) {
           state.calls.update++;
           if (state.beforeUpdate) await state.beforeUpdate(name, query, data);
@@ -44,7 +44,8 @@ exports.fixture = () => {
   const load = name => {
     const filename = path.join(__dirname, '../../cloudfunctions', name, 'index.js'); const exports = {};
     class ClockDate extends Date { constructor(...args) { super(...(args.length ? args : [state.now ?? Date.now()])); } static now() { return state.now ?? Date.now(); } }
-    vm.runInNewContext(fs.readFileSync(filename, 'utf8'), { exports, require: module => module === 'wx-server-sdk' ? cloud : require(module), Date: ClockDate, Buffer, process, console, Set, Number, String, Intl, setTimeout, clearTimeout }, { filename });
+    const logger = Object.fromEntries(['info', 'warn', 'error', 'log'].map(level => [level, (...args) => state.logs.push({ level, args })]));
+    vm.runInNewContext(fs.readFileSync(filename, 'utf8'), { exports, require: module => module === 'wx-server-sdk' ? cloud : require(module), Date: ClockDate, Buffer, process, console: logger, Set, Number, String, Intl, setTimeout, clearTimeout }, { filename });
     return exports.main;
   };
   return { rows, state, sent, load };

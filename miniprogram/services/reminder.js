@@ -9,6 +9,19 @@ let mutationVersion = 0;
 let readVersion = 0;
 let appliedReadVersion = 0;
 let cachedReminders = null;
+const readFlights = new Map();
+const STATS_TTL_MS = 30000;
+let cachedStats = null;
+let statsReadVersion = 0;
+let appliedStatsReadVersion = 0;
+const shareRead = (key, load, force = false) => {
+  if (!force && readFlights.has(key)) return readFlights.get(key);
+  const request = load();
+  readFlights.set(key, request);
+  const cleanup = () => { if (readFlights.get(key) === request) readFlights.delete(key); };
+  request.then(cleanup, cleanup);
+  return request;
+};
 const reconcileReminders = (items) => {
   const rows = new Map(items.filter((item) => item.status !== 'deleted').map((item) => [item._id, item]));
   changes.forEach(({ patch }, id) => {
@@ -20,6 +33,7 @@ const reconcileReminders = (items) => {
 const getCachedReminders = () => cachedReminders === null ? null : reconcileReminders(cachedReminders);
 const recordChange = (id, patch) => {
   changes.set(id, { version: ++mutationVersion, patch: { ...(changes.get(id) || {}).patch, ...patch } });
+  cachedStats = null;
 };
 const syncFields = ['title', 'remindAt', 'remindOffsetMinutes', 'location', 'note', 'status'];
 const matchesChange = (row, patch) => syncFields.every((key) => {
@@ -34,7 +48,7 @@ const createReminder = async (reminder, clientRequestId = `${Date.now()}-${Math.
   recordChange(result.reminderId, result.reminder || { ...reminder, status: 'pending', createdAt: new Date().toISOString() });
   return result;
 };
-const getReminders = async (sort = 'createdAtDesc') => {
+const fetchReminders = async (sort) => {
   const requestVersion = ++readVersion;
   const startedMutationVersion = mutationVersion;
   const items = []; const seen = new Set(); let cursor = null;
@@ -56,10 +70,27 @@ const getReminders = async (sort = 'createdAtDesc') => {
   cachedReminders = reconcileReminders(result.items);
   return cachedReminders;
 };
+// 只合并相同排序、同一写入版本的进行中请求，不缓存列表的新鲜度。
+const getReminders = (sort = 'createdAtDesc', options = {}) => shareRead(`list:${sort}:${mutationVersion}`, () => fetchReminders(sort), options.force);
 const updateReminder = async (id, reminder) => { const result = await call('updateReminder', { id, reminder }); recordChange(id, reminder); return result; };
 const completeReminder = async (id) => { const result = await call('completeReminder', { id }); recordChange(id, { status: 'completed', completedAt: result.completedAt || new Date().toISOString() }); return result; };
 const deleteReminder = async (id) => { const result = await call('deleteReminder', { id }); recordChange(id, { status: 'deleted' }); return result; };
 const submitFeedback = (content) => call('submitFeedback', { content });
-const getReminder = async id => (await call('getReminders', { id })).item;
-const getReminderStats = async () => { const stats = await call('getReminders', { mode: 'stats' }); if (!stats || !Number.isInteger(stats.createdCount) || !Number.isInteger(stats.remindedCount)) throw new Error('统计服务尚未就绪'); return stats; };
+const getReminder = id => shareRead(`item:${id}:${mutationVersion}`, async () => (await call('getReminders', { id })).item);
+const getReminderStats = async (options = {}) => {
+  const version = mutationVersion;
+  const age = cachedStats ? Date.now() - cachedStats.at : Infinity;
+  if (!options.force && cachedStats && cachedStats.version === version && age >= 0 && age < STATS_TTL_MS) return cachedStats.value;
+  return shareRead(`stats:${version}`, async () => {
+    const requestVersion = ++statsReadVersion;
+    const stats = await call('getReminders', { mode: 'stats', includeLegacyCompleted: false });
+    if (!stats || !Number.isInteger(stats.createdCount) || stats.createdCount < 0 || !Number.isInteger(stats.remindedCount) || stats.remindedCount < 0) throw new Error('统计服务尚未就绪');
+    // 写入发生前启动的统计不能更新缓存或返回陈旧数字。
+    if (version !== mutationVersion) return getReminderStats();
+    if (requestVersion < appliedStatsReadVersion && cachedStats) return cachedStats.value;
+    appliedStatsReadVersion = requestVersion;
+    cachedStats = { version, at: Date.now(), value: stats };
+    return stats;
+  }, options.force);
+};
 module.exports = { parseReminder, createReminder, getReminders, getReminder, getReminderStats, updateReminder, completeReminder, deleteReminder, submitFeedback, reconcileReminders, getCachedReminders };

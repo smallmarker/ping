@@ -193,7 +193,14 @@ const run = async (name, fn) => {
       assert.deepEqual(sentMessages.at(-1).data, { thing5: { value: '去医院复查' }, date4: { value: '2026-09-28 15:00' } });
       assert.equal(records.reminders.at(-1).notifyStatus, 'sent');
       assert.equal(records.reminders.at(-2).notifyStatus, 'authorized', 'sending has priority over idle housekeeping');
-      const idle = await send({ Type: 'timer', TriggerName: 'pingReminderEveryMinute' });
+      // 异常维护仅在五分钟槽执行；固定时钟，避免测试取决于运行时分钟。
+      const realNow = Date.now;
+      let idle;
+      try {
+        const maintenanceAt = Math.floor(realNow() / 300000) * 300000;
+        Date.now = () => maintenanceAt;
+        idle = await send({ Type: 'timer', TriggerName: 'pingReminderEveryMinute' });
+      } finally { Date.now = realNow; }
       assert.equal(records.reminders.at(-2).notifyStatus, 'missed');
       assert.equal(idle.data.missed, 1);
     }]
